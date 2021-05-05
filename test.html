@@ -1,0 +1,87 @@
+<html>
+	<head>
+	    <title>Chat WebSocket</title>
+	    
+	    <script src="./js/sockjs-0.3.4.js"></script>
+	    <script src="./js/stomp.js"></script>
+	    
+	    <script type="text/javascript">
+
+	        var stompClient = null;
+
+	        function setConnected(connected) {
+
+	            document.getElementById('connect').disabled = connected;
+	            document.getElementById('disconnect').disabled = !connected;
+	            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+	            document.getElementById('response').innerHTML = '';
+	        }
+
+	        function connect() {
+                var tokenKey = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ7XHJcbiAgXCJpZFwiIDogXCI2MDZkZTZlY2Q5ZDUxODBiNThiMTdkMTlcIixcclxuICBcImVtYWlsXCIgOiBcImphbWVzb24uY2hlb25nQHNpbXBsZXhpYXIuY29tXCIsXHJcbiAgXCJwYXNzd29yZFwiIDogXCIkMmEkMTAkcVYwaXQxaWg0YWh6N0VwZHRnTXdLLllZdDYwLlc0cTdMWll5a0xUdk00ZFpGNG1ZWGh5cEtcIixcclxuICBcImlzVGVtcFwiIDogbnVsbCxcclxuICBcImZpcnN0TmFtZVwiIDogXCJKYW1lc29uXCIsXHJcbiAgXCJsYXN0TmFtZVwiIDogXCJDaGVvbmdcIixcclxuICBcInJvbGVcIiA6IFwiYWRtaW5cIixcclxuICBcImlzTG9ja2VkXCIgOiBmYWxzZSxcclxuICBcImRlcGFydG1lbnRcIiA6IG51bGwsXHJcbiAgXCJ0aW1lem9uZVwiIDogXCJQU1RcIixcclxuICBcImVuYWJsZWRcIiA6IHRydWUsXHJcbiAgXCJhY2NvdW50Tm9uTG9ja2VkXCIgOiB0cnVlLFxyXG4gIFwiYWNjb3VudE5vbkV4cGlyZWRcIiA6IHRydWUsXHJcbiAgXCJjcmVkZW50aWFsc05vbkV4cGlyZWRcIiA6IHRydWVcclxufSIsImlhdCI6MTYxODI3MjI4NH0.N0Jt0BIaXhzeCxCZsX2qBO38ueksrolTQKXIk3cJR-ZU1LPBgOK6GBLrMyoXt9CAQpMIvqL33B7rM-GksbCFMw'
+	            var socket = new SockJS('http://localhost:8080/chatwithbots',null,{Authorization: `Bearer ${tokenKey}`});
+	            stompClient = Stomp.over(socket);
+
+	            stompClient.connect({Authorization: `Bearer ${tokenKey}`}, function(frame) {
+
+	            	setConnected(true);
+	                console.log('Connected: ' + frame);
+	                stompClient.subscribe('/topic/pushmessages', function(messageOutput) {
+	                    showMessageOutput(JSON.parse(messageOutput.body));
+	                },{Authorization: `Bearer ${tokenKey}`});
+	            });
+	        }
+
+	        function disconnect() {
+
+	            if(stompClient != null) {
+	                stompClient.disconnect();
+	            }
+
+	            setConnected(false);
+	            console.log("Disconnected");
+	        }
+
+	        function sendMessage() {
+
+	        	var from = document.getElementById('from').value;
+	            var text = document.getElementById('text').value;
+	            stompClient.send("/app/chatwithbots", {}, JSON.stringify({'from':from, 'text':text}));
+	        }
+
+	        function showMessageOutput(messageOutput) {
+
+	            var response = document.getElementById('response');
+	            var p = document.createElement('p');
+	            p.style.wordWrap = 'break-word';
+	            p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
+	            response.appendChild(p);
+	        }
+
+	    </script>
+	    
+	</head>
+	
+	<body onload="disconnect()">
+
+		<div>
+		
+		
+			<div>
+				<input type="text" id="from" placeholder="Choose a nickname"/>
+			</div>
+			<br />
+		    <div>
+		        <button id="connect" onclick="connect();">Connect</button>
+		        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+		    </div>
+		    <br />
+		    <div id="conversationDiv">
+		        <input type="text" id="text" placeholder="Write a message..."/>
+		        <button id="sendMessage" onclick="sendMessage();">Send</button>
+		        <p id="response"></p>
+		    </div>
+		</div>
+
+	</body>
+</html>
