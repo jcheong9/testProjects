@@ -18,8 +18,10 @@
 	        }
 
 	        function connect() {
+				var username = document.getElementById('from').value;
+				var password = document.getElementById('password').value;
                 var tokenKey = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ7XHJcbiAgXCJpZFwiIDogXCI2MDZkZTZlY2Q5ZDUxODBiNThiMTdkMTlcIixcclxuICBcImVtYWlsXCIgOiBcImphbWVzb24uY2hlb25nQHNpbXBsZXhpYXIuY29tXCIsXHJcbiAgXCJwYXNzd29yZFwiIDogXCIkMmEkMTAkcVYwaXQxaWg0YWh6N0VwZHRnTXdLLllZdDYwLlc0cTdMWll5a0xUdk00ZFpGNG1ZWGh5cEtcIixcclxuICBcImlzVGVtcFwiIDogbnVsbCxcclxuICBcImZpcnN0TmFtZVwiIDogXCJKYW1lc29uXCIsXHJcbiAgXCJsYXN0TmFtZVwiIDogXCJDaGVvbmdcIixcclxuICBcInJvbGVcIiA6IFwiYWRtaW5cIixcclxuICBcImlzTG9ja2VkXCIgOiBmYWxzZSxcclxuICBcImRlcGFydG1lbnRcIiA6IG51bGwsXHJcbiAgXCJ0aW1lem9uZVwiIDogXCJQU1RcIixcclxuICBcImVuYWJsZWRcIiA6IHRydWUsXHJcbiAgXCJhY2NvdW50Tm9uTG9ja2VkXCIgOiB0cnVlLFxyXG4gIFwiYWNjb3VudE5vbkV4cGlyZWRcIiA6IHRydWUsXHJcbiAgXCJjcmVkZW50aWFsc05vbkV4cGlyZWRcIiA6IHRydWVcclxufSIsImlhdCI6MTYxODI3MjI4NH0.N0Jt0BIaXhzeCxCZsX2qBO38ueksrolTQKXIk3cJR-ZU1LPBgOK6GBLrMyoXt9CAQpMIvqL33B7rM-GksbCFMw'
-	            var socket = new SockJS('http://localhost:8080/chatwithbots',null,{Authorization: `Bearer ${tokenKey}`});
+	            var socket = new SockJS('http://localhost:8080/notification',null,{Authorization: `Bearer ${tokenKey}`});
 	            stompClient = Stomp.over(socket);
 
 	            stompClient.connect({Authorization: `Bearer ${tokenKey}`}, function(frame) {
@@ -65,11 +67,14 @@
 	<body onload="disconnect()">
 
 		<div>
-		
-		
+
 			<div>
 				<input type="text" id="from" placeholder="Choose a nickname"/>
 			</div>
+			<div>
+				<input type="password" id="password" placeholder="password"/>
+			</div>
+		
 			<br />
 		    <div>
 		        <button id="connect" onclick="connect();">Connect</button>
